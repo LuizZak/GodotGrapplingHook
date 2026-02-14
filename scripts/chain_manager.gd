@@ -85,7 +85,7 @@ func draw(node: Node2D, color: Color = Color.WHITE, width: float = -1, antialias
     var points := chain_segment_points()
     points = node.global_transform.inverse() * points
 
-    node.draw_circle(points[-1], width + 2.0, color, width, true, antialiased)
+    node.draw_circle(points[-1], width + 2.0, color)
 
     if points.size() >= 2:
         node.draw_polyline(points, color, width, antialiased)
