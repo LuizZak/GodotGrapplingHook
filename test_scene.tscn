@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://rqti7h10jxnp"]
+
+[ext_resource type="Script" uid="uid://cqemoxv5owlqe" path="res://test_scene.gd" id="1_sasra"]
+[ext_resource type="Script" uid="uid://bp5cyr1vxbjn" path="res://scripts/render_collision_shape_2d.gd" id="1_uhqqe"]
+[ext_resource type="Script" uid="uid://rebjf7fcb7xh" path="res://nodes/rope_node.gd" id="2_ia1lp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6adnx"]
+size = Vector2(53, 688)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uhqqe"]
+size = Vector2(1177, 66)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ia1lp"]
+size = Vector2(1175, 44)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sasra"]
+size = Vector2(58, 702)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ia1lp"]
+radius = 69.065186
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_sasra"]
+radius = 64.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_uhqqe"]
+radius = 36.124783
+
+[node name="TestScene" type="Node2D" unique_id=538663740]
+script = ExtResource("1_sasra")
+
+[node name="SceneBounds" type="StaticBody2D" parent="." unique_id=1986499411]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SceneBounds" unique_id=1140504531]
+position = Vector2(16.5, 334)
+shape = SubResource("RectangleShape2D_6adnx")
+script = ExtResource("1_uhqqe")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="SceneBounds" unique_id=1252154770]
+position = Vector2(578.5, 653)
+shape = SubResource("RectangleShape2D_uhqqe")
+script = ExtResource("1_uhqqe")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="SceneBounds" unique_id=1968652886]
+position = Vector2(577.5, 12)
+shape = SubResource("RectangleShape2D_ia1lp")
+script = ExtResource("1_uhqqe")
+
+[node name="CollisionShape2D4" type="CollisionShape2D" parent="SceneBounds" unique_id=544751273]
+position = Vector2(1138, 341)
+shape = SubResource("RectangleShape2D_sasra")
+script = ExtResource("1_uhqqe")
+
+[node name="CollisionShape2D5" type="CollisionShape2D" parent="SceneBounds" unique_id=769983614]
+position = Vector2(936, 360)
+shape = SubResource("CircleShape2D_ia1lp")
+script = ExtResource("1_uhqqe")
+
+[node name="Tumbler" type="RigidBody2D" parent="." unique_id=959249073]
+position = Vector2(524, 358)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Tumbler" unique_id=1958540734]
+shape = SubResource("CircleShape2D_sasra")
+script = ExtResource("1_uhqqe")
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Tumbler" unique_id=1476440431]
+node_a = NodePath("../../SceneBounds")
+node_b = NodePath("..")
+motor_enabled = true
+motor_target_velocity = 4.1887903
+
+[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=133752993]
+position = Vector2(248, 510)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=1512525368]
+shape = SubResource("CircleShape2D_uhqqe")
+script = ExtResource("1_uhqqe")
+
+[node name="RopeNode" type="Node2D" parent="RigidBody2D" unique_id=1392045566]
+unique_name_in_owner = true
+position = Vector2(-248, -510)
+script = ExtResource("2_ia1lp")
+head_body = NodePath("..")
+collision_layer = 4
+collision_mask = 1
+metadata/_custom_type_script = "uid://rebjf7fcb7xh"
