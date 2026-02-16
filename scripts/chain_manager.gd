@@ -176,8 +176,16 @@ func _manage_chain_head_attachment() -> void:
         for body in bodies:
             if chain_bodies.has(body):
                 continue
+            if not _has_any_bits(body, collision_mask):
+                continue
 
-            var pin_joint := head.attach_to_world(body)
+            var pin_joint: PinJoint2D
+
+            if body is TileMapLayer:
+                pin_joint = head.attach_to_static_fixture(segments_container)
+            else:
+                pin_joint = head.attach_to_world(body)
+
             is_attached_to_world = true
             start_spooling()
             on_attached_to_world.emit(body, pin_joint)
@@ -278,6 +286,14 @@ func _create_segment(pos: Vector2, rot: float) -> ChainSegment:
 
     return segment
 
+static func _has_any_bits(node: Node2D, col_mask: int) -> bool:
+    if node is CollisionObject2D:
+        return (node.collision_layer & col_mask) != 0
+    if node is TileMapLayer:
+        var tilemap := node as TileMapLayer
+        return (tilemap.tile_set.get_physics_layer_collision_layer(0) & col_mask) != 0
+    return false
+
 class ChainSegment:
     ## Joint that attaches this chain segment to a previous chain segment, or to
     ## a body.
@@ -289,6 +305,10 @@ class ChainSegment:
     var spring_joint_to_prev: CustomSpring
     ## The chain segment body.
     var body: RigidBody2D
+    ## Static body this chain segment might be attached to, if it's a head segment
+    ## that is attached to something that is by default non-joinable with default
+    ## Joint2D instances, like TileMapLayers.
+    var static_fixture: StaticBody2D
     ## The next chain segment on the chain, if any.
     var next: ChainSegment
     ## Gets the length of this segment, based on the number of `next` segments
@@ -321,6 +341,9 @@ class ChainSegment:
         if joint_to_world != null:
             joint_to_world.queue_free()
             joint_to_world = null
+        if static_fixture != null:
+            static_fixture.queue_free()
+            static_fixture = null
         if body != null:
             body.queue_free()
             body = null
@@ -366,6 +389,17 @@ class ChainSegment:
         body.add_child(pin_joint)
         joint_to_world = pin_joint
         return pin_joint
+
+    func attach_to_static_fixture(container_node: Node2D) -> PinJoint2D:
+        static_fixture = StaticBody2D.new()
+        static_fixture.collision_layer = 0
+        static_fixture.collision_mask = 0
+
+        container_node.add_child(static_fixture)
+
+        static_fixture.global_position = body.global_position
+
+        return attach_to_world(static_fixture)
 
     func spring_attach_to_head(head: Node2D, spring_k: float, spring_d: float) -> void:
         var spring := CustomSpring.new(

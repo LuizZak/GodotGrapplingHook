@@ -20,6 +20,11 @@ signal on_spool_ended()
 @export_node_path("RigidBody2D")
 var head_body: NodePath
 
+## The container for segments and other objects created by the rope.
+## Ideally a static node that is not moving, like the root scene container.
+@export_node_path("Node2D")
+var segment_container_node: NodePath = ^"."
+
 ## The collision layer for the rope segments.
 @export_flags_2d_physics
 var collision_layer: int:
@@ -40,7 +45,7 @@ func _ready() -> void:
     if _get_head_node() == null:
         push_error("Expected 'head_body' to be a valid path to a RigidBody2D!")
 
-    chain_manager = ChainManager.new(_get_head_node(), self)
+    chain_manager = ChainManager.new(_get_head_node(), _get_segment_container())
     chain_manager.on_attached_to_world.connect(
         func (body, joint):
             on_attached_to_world.emit(body, joint)
@@ -96,3 +101,6 @@ func start_spooling() -> void:
 
 func _get_head_node() -> RigidBody2D:
     return get_node(head_body)
+
+func _get_segment_container() -> Node2D:
+    return get_node(segment_container_node)
